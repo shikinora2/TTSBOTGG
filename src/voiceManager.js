@@ -1,4 +1,4 @@
-const { joinVoiceChannel, createAudioPlayer, AudioPlayerStatus, getVoiceConnection } = require('@discordjs/voice');
+const { joinVoiceChannel, createAudioPlayer, AudioPlayerStatus, getVoiceConnection, VoiceConnectionStatus, entersState } = require('@discordjs/voice');
 const ttsQueue = require('./ttsQueue');
 
 class VoiceManager {
@@ -56,6 +56,26 @@ class VoiceManager {
             const queueObj = ttsQueue.getQueue(guildId);
             queueObj.isPlaying = false;
             if (queueObj.items.length > 0) ttsQueue.processQueue(guildId, this, null, interaction.guild);
+        });
+
+        connection.on(VoiceConnectionStatus.Disconnected, async (oldState, newState) => {
+            try {
+                await Promise.race([
+                    entersState(connection, VoiceConnectionStatus.Signalling, 5_000),
+                    entersState(connection, VoiceConnectionStatus.Connecting, 5_000),
+                ]);
+                // Seems to be reconnecting to a new voice channel - ignore disconnect
+                console.log(`[Voice] Tự động kết nối lại Voice Channel thành công.`);
+            } catch (error) {
+                // Seems to be a real disconnect which shouldn't be recovered from
+                console.log(`[Voice] Voice Channel bị ngắt kết nối tĩnh (hoặc UDP timeout). Cố gắng phục hồi bằng cách join lại...`);
+
+                // Thử reconnect thủ công (optional) nhưng để an toàn và clean thì báo ngắt trước.
+                // Để phòng ngừa crash văng bot, ta destroy kết nối cũ.
+                connection.destroy();
+                this.connections.delete(guildId);
+                this.players.delete(guildId);
+            }
         });
 
         return { voiceChannel, connection };

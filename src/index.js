@@ -63,6 +63,13 @@ client.on(Events.MessageCreate, async message => {
     // Nếu chưa setup kênh chat, hoặc bot không ở trong kênh thoại thì thôi
     if (message.channelId !== setupChannelId || !connection) return;
 
+    console.log(`[RAW MESSAGE] Nhận được tin nhắn từ ${message.author.tag}: "${message.content}"`);
+
+    if (!message.content || message.content.trim() === '') {
+        console.log(`[DEBUG] Tin nhắn rỗng (có thể do thiếu Message Content Intent hoạt thiếu chữ).`);
+        return;
+    }
+
     // Làm sạch text
     let text = message.content;
 
@@ -87,10 +94,15 @@ client.on(Events.MessageCreate, async message => {
     }
 
     if (text.length > 0) {
+        console.log(`[DEBUG] Kịch bản qua lọc thành công. Gửi vào hàng đợi: ${text}`);
         ttsQueue.addTextLine(message.guild.id, text, message.channel, voiceManager, message.guild);
         try {
             await message.react('👀');
-        } catch (e) { }
+        } catch (e) {
+            console.error(`[DEBUG] Không thể react bài viết:`, e.message);
+        }
+    } else {
+        console.log(`[DEBUG] Văn bản bị lọc toàn bộ do biểu thức chính quy (Link/Emoji).`);
     }
 });
 

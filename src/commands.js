@@ -59,7 +59,10 @@ const commands = [
     new SlashCommandBuilder()
         .setName('clones')
         .setDescription('Xem danh sách tất cả bot clone đang chạy')
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+    new SlashCommandBuilder()
+        .setName('help')
+        .setDescription('Xem danh sách hướng dẫn các lệnh của bot')
 ];
 
 module.exports = { commands };
