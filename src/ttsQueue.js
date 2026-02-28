@@ -62,8 +62,12 @@ class TTSQueueManager {
             });
             console.log(`[TTS] Đã tạo audio URL thành công: ${url}`);
 
-            // Yêu cầu voiceManager phát cái url này
-            const resource = createAudioResource(url);
+            // Yêu cầu voiceManager phát cái url này. Ép inlineVolume để Discord không ném mất audio.
+            const resource = createAudioResource(url, {
+                inlineVolume: true
+            });
+            resource.volume.setVolume(1.0);
+
             console.log(`[TTS] Đã tạo @discordjs/voice resource. Bắt đầu phát qua VoiceManager...`);
 
             await voiceManager.playResource(guildId, resource, guildObj);
