@@ -160,7 +160,10 @@ class VoiceManager {
     async playResource(guildId, resource, guildObj) {
         const player = this.players.get(guildId);
         if (player) {
+            console.log(`[VoicePlayer] Đang gọi lệnh player.play(resource)...`);
             player.play(resource);
+        } else {
+            console.log(`[VoicePlayer] 🔴 LỖI: Không tìm thấy player nào cho guildId ${guildId}`);
         }
     }
 

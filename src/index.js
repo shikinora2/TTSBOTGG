@@ -200,7 +200,9 @@ client.on(Events.InteractionCreate, async interaction => {
     }
 
     else if (commandName === 'ping') {
-        await interaction.reply(`🏓 Pong! \`${client.ws.ping}ms\``);
+        try {
+            await interaction.reply(`🏓 Pong! \`${client.ws.ping}ms\``);
+        } catch (e) { console.error("Ping reply error", e.message); }
     }
 
     // CÁC LỆNH QUẢN LÝ CLONE
@@ -271,7 +273,11 @@ client.on(Events.InteractionCreate, async interaction => {
 
 // Bỏ qua lỗi promise unhandled thay vì crash server
 process.on('unhandledRejection', error => {
-    console.error('Unhandled promise rejection:', error);
+    console.error('Unhandled promise rejection:', error.message);
+});
+
+client.on('error', error => {
+    console.error('Discord client error:', error.message);
 });
 
 client.login(TOKEN);

@@ -49,9 +49,11 @@ class TTSQueueManager {
                 slow: false,
                 host: 'https://translate.google.com',
             });
+            console.log(`[TTS] Đã tạo audio URL thành công: ${url}`);
 
             // Yêu cầu voiceManager phát cái url này
             const resource = createAudioResource(url);
+            console.log(`[TTS] Đã tạo @discordjs/voice resource. Bắt đầu phát qua VoiceManager...`);
 
             await voiceManager.playResource(guildId, resource, guildObj);
 
