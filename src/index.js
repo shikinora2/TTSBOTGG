@@ -209,7 +209,10 @@ client.on(Events.InteractionCreate, async interaction => {
         cloneManager.saveClones(clones); // Lưu DB
         cloneManager.startClone(newClone); // Chạy process ẩn
 
-        await interaction.reply({ content: `🎉 Đã khởi chạy thành công 1 mầm Bot (ID: \`${cloneId}\`). Bot con này sẽ mất khoảng vài giây để Online.\nĐể bot con này vào chung server, bạn cần truy cập Discord Developer Portal -> Invite URL (Bot quyền Admin) của cái Application ID vừa nhập.` });
+        // Tạo Invite Link với Permissions 3148800 (View, Send, Speak, Connect, v.v)
+        const inviteUrl = `https://discord.com/oauth2/authorize?client_id=${appId}&permissions=3148800&scope=bot%20applications.commands`;
+
+        await interaction.reply({ content: `🎉 Đã khởi chạy thành công 1 mầm Bot (ID: \`${cloneId}\`). Bot con này sẽ mất khoảng vài giây để Online.\n\n🔗 **Click vào link dưới đây để mời Bot Clone này vào chung Server:**\n${inviteUrl}` });
     }
 
     else if (commandName === 'clones') {

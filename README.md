@@ -1,190 +1,87 @@
-# 🤖 Discord TTS Bot — Valtec-TTS
+# 🤖 Discord gTTS Bot — Node.js Version
 
-Bot Discord đọc tin nhắn bằng giọng nói tiếng Việt tự động.
-Giọng đọc: 👩‍🦰 **Nữ miền Bắc (NF)** · Model: Valtec-TTS 74.8M params · Chạy trên CPU.
+Bot Discord đọc tin nhắn bằng giọng nói (Text-to-Speech) tự động sử dụng **Google TTS**.
+Phiên bản mới viết bằng **Node.js** cực kỳ nhẹ nhàng, siêu tốc, có thể chạy mượt mà trên VPS tài nguyên cực thấp (1 CPU / 512MB RAM) mà không bị giật lag. Hỗ trợ đa ngôn ngữ và tạo vô hạn các bot clone song song.
 
 ---
 
-## ⚡ Setup VPS — 1 dòng lệnh
+## ⚡ Cài đặt lên VPS Ubuntu (Chỉ bằng 1 lệnh)
 
-SSH vào VPS và chạy:
+Hãy mở terminal SSH vào VPS Ubuntu của bạn, copy dòng dưới đây rồi bấm Enter:
 
 ```bash
 git clone https://github.com/shikinora2/TTSBOT.git /root/ttsbot && cd /root/ttsbot && sudo bash setup.sh
 ```
 
-> ⏱ Mất khoảng **10–20 phút**. Script tự động làm tất cả: swap 2GB, Python 3.11, PyTorch, dependencies, systemd services.
+> ⏱ Mất chưa tới **2 phút**. Script lập trình sẵn sẽ tự động cài Node.js 20, thư viện FFmpeg, tải Dependencies và thiết lập siêu công cụ quản lý `pm2` để bot luôn tự bắt đầu chạy ngầm mỗi khi khởi động lại máy.
 
 ---
 
-## ✅ Sau khi setup xong
+## ✅ Sau khi cài đặt xong
 
-### 1. Điền Discord Token
+### 1. Tạo link mời bot (OAuth2)
+Để mời bot vào server, bạn cần thao tác trên trang [Discord Developer Portal](https://discord.com/developers/applications):
+1. Vào tab **OAuth2** → **URL Generator**
+2. **Scopes**: Tích chọn `✅ bot` + `✅ applications.commands`
+3. **Bot Permissions**: Tích chọn `✅ Send Messages` · `✅ Read Message History` · `✅ Add Reactions` · `✅ Connect` · `✅ Speak` · `✅ Use Voice Activity`
+4. Copy đoạn URL ở dưới cùng → Dán vào trình duyệt → Chọn Server của bạn → **Authorize**.
+
+### 2. Điền Discord Token
+Bạn cần điền thông tin Token Discord để bot hoạt động:
 
 ```bash
 nano /root/ttsbot/.env
 ```
 
+Điền Token và Application ID của Bot (lấy tại trang Discord Developer Portal):
 ```env
-DISCORD_TOKEN=your_bot_token_here
-DISCORD_APP_ID=your_application_id_here
-TTS_BACKEND_URL=http://127.0.0.1:5050
+DISCORD_TOKEN=DÁN_TOKEN_CỦA_BẠN_VÀO_ĐÂY
+DISCORD_APP_ID=DÁN_BOT_ID_CỦA_BẠN_VÀO_ĐÂY
 ```
+*(Bấm `Ctrl+X` => `Y` => `Enter` để lưu lại file)*
 
-### 2. Khởi động
+### 3. Khởi động lại bot
+Sử dụng công cụ `pm2` để yêu cầu bot làm mới dữ liệu và bắt đầu phục vụ:
 
 ```bash
-systemctl start tts-server    # Backend TTS (chạy trước)
-systemctl start ttsbot        # Discord Bot (chạy sau)
+pm2 restart ttsbot
 ```
 
-Lần đầu bot sẽ **tự tải model ~500 MB** từ HuggingFace — chờ vài phút.
-
 ---
 
-## 🏗️ Kiến trúc
+## 🎮 Danh sách lệnh Slash trên Discord
 
-```
-VPS Ubuntu (1GB RAM + 2GB Swap)
-│
-├── tts_server.py         ← Backend HTTP, tải model 1 lần (~800MB)
-│   ├── POST /synthesize  ← Nhận text → trả file WAV
-│   ├── GET  /health      ← Kiểm tra trạng thái
-│   └── GET  /speakers    ← Danh sách giọng đọc
-│
-├── ttsbot.py             ← Discord Bot, gọi API (~50MB RAM)
-│   └── clone_1, clone_2  ← Các bot clone cũng dùng chung backend
-│
-└── valtec-tts-src/       ← Source code Valtec-TTS (local)
-```
-
-> 💡 Bot **không tải model** — chỉ gọi backend qua HTTP. Dù chạy nhiều bot clone, model chỉ tải **1 lần duy nhất**.
-
----
-
-## ✅ Yêu cầu VPS
-
-| Thành phần | Tối thiểu |
-|---|---|
-| OS | Ubuntu 22.04 / 24.04 LTS x64 |
-| RAM | **1 GB** (model ~800 MB + swap) |
-| Disk | 10 GB |
-| CPU | 1 vCPU |
-| Python | **3.11** (vinorm không tương thích 3.12+) |
-| ffmpeg | Bắt buộc |
-
----
-
-## ⚙️ Cấu hình Discord Developer Portal
-
-### 1. Bật Message Content Intent
-
-1. Vào https://discord.com/developers/applications
-2. Chọn app → tab **Bot**
-3. Bật **MESSAGE CONTENT INTENT** → **Save Changes**
-
-### 2. Tạo link mời bot
-
-1. Tab **OAuth2** → **URL Generator**
-2. Scopes: ✅ `bot` + ✅ `applications.commands`
-3. Bot Permissions: ✅ `Send Messages` · ✅ `Read Message History` · ✅ `Add Reactions` · ✅ `Connect` · ✅ `Speak` · ✅ `Use Voice Activity`
-4. Copy URL → dán vào trình duyệt → chọn server → **Authorize**
-
----
-
-## 🎮 Lệnh Bot trong Discord
-
-### 🔒 Lệnh Admin (chỉ admin server)
+### 🔒 Lệnh Cài Đặt (chỉ admin server)
 
 | Lệnh | Chức năng |
 |---|---|
-| `/setup [#kênh]` | Chọn kênh text để bot lắng nghe |
-| `/status` | Xem trạng thái bot + backend |
-| `/clone token:<TOKEN> app_id:<ID>` | Nhân bản thêm 1 bot độc lập |
-| `/unclone clone_id:<ID>` | Xóa 1 bot clone |
-| `/clones` | Xem danh sách bot clone |
+| `/setup [#kênh]` | Chọn một kênh text cố định để bot lắng nghe chữ và phát ra âm thanh |
+| `/status` | Xem bảng trạng thái chi tiết của bot (Ngôn ngữ đang chọn, Hàng đợi...) |
+| `/clone token:<TOKEN> app_id:<ID>` | Nhân bản bot (tạo thêm vô hạn bot con xài chung 1 process VPS) |
+| `/unclone clone_id:<ID>` | Cho một bot con đi ngủ vĩnh viễn |
+| `/clones` | Xem danh sách các mã máy bot con đang hoạt động |
 
-### 🌐 Lệnh mọi người
+### 🌐 Lệnh Voice Control (Mọi người)
 
 | Lệnh | Chức năng |
 |---|---|
-| `/join` | Bot vào kênh thoại bạn đang đứng |
-| `/leave` | Bot rời kênh thoại, xóa hàng đợi |
-| `/skip` | Bỏ qua câu đang đọc |
-| `/help` | Xem danh sách lệnh |
-
-### 💬 Cách dùng TTS
-
-1. Admin chạy `/setup #kênh-chat`
-2. Ai đó chạy `/join` (phải đang ở voice channel)
-3. **Gõ text** vào kênh đã setup → bot tự đọc
-4. Bot react 👀 khi nhận tin nhắn
-5. Giới hạn **150 ký tự**/tin nhắn
+| `/voice` | Chọn ngôn ngữ Google TTS (Hỗ trợ: Tiếng Việt, Anh, Nhật, Hàn, Trung) |
+| `/join` | Gọi bot vào kênh thoại bạn đang có mặt |
+| `/leave` | Đuổi bot ra khỏi kênh thoại |
+| `/skip` | Bỏ qua câu đang đọc dở, chuyển sang câu tiếp theo liền mạch |
+| `/skip_emoji` | (Bật/tắt) Tính năng lọc bỏ tự động các Emoji / Biểu tượng cảm xúc Unicode |
+| `/ping` | Xem độ trễ tín hiệu từ máy chủ bot tới Discord |
+| `/help` | Hiện bảng hướng dẫn |
 
 ---
 
-## 🔄 Quản lý service
+## � Quản trị tiến trình ngầm (Bằng PM2)
 
-```bash
-# TTS Backend
-systemctl start   tts-server    # Khởi động backend
-systemctl stop    tts-server    # Dừng backend
-systemctl restart tts-server    # Khởi động lại
-journalctl -u tts-server -f     # Log realtime
+Hệ thống Bot hiện tại không chiếm dụng cửa sổ Terminal của bạn. Nó sử dụng `PM2`. Bạn có thể dễ dàng quản lý thông qua các lệnh rút gọn này:
 
-# Discord Bot
-systemctl start   ttsbot        # Khởi động bot
-systemctl stop    ttsbot        # Dừng bot
-systemctl restart ttsbot        # Khởi động lại
-journalctl -u ttsbot -f         # Log realtime
-```
+- **Xem log tương tác (cửa sổ theo dõi bot chat)**: `pm2 logs ttsbot`
+- **Tạm dừng bot hoạt động**: `pm2 stop ttsbot`
+- **Khởi động lại bot**: `pm2 restart ttsbot`
+- **Kiểm tra tình trạng bot (RAM/CPU đang tốn)**: `pm2 status ttsbot`
 
----
-
-## 📁 Cấu trúc thư mục
-
-```
-/root/ttsbot/
-├── tts_server.py       # Backend HTTP xử lý TTS ⭐
-├── ttsbot.py           # Discord Bot ⭐
-├── setup.sh            # Script setup all-in-one
-├── install.sh          # Script cài packages riêng
-├── requirements.txt    # Dependencies
-├── clones.json         # Danh sách bot clone (tự tạo)
-├── .env                # Token Discord (KHÔNG share)
-├── .env.example        # Mẫu file .env
-├── README.md
-└── valtec-tts-src/     # Source code Valtec-TTS
-```
-
----
-
-## 🔧 Nhân bản bot (/clone)
-
-Để có **2+ bot** hoạt động đồng thời trong 1 server:
-
-1. Tạo bot mới trên [Discord Developer Portal](https://discord.com/developers/applications)
-2. Lấy **Token** + **Application ID** mới
-3. Mời bot mới vào server (bật Message Content Intent)
-4. Admin gõ trong Discord: `/clone token:NEW_TOKEN app_id:NEW_APP_ID`
-5. Bot clone online trong vài giây, dùng **chung backend TTS**
-
-> ⚠️ Mỗi bot cần **1 token riêng** — Discord giới hạn 1 bot chỉ ở 1 voice channel/server.
-
----
-
-## 🔄 Cập nhật code
-
-```bash
-cd /root/ttsbot && git pull && systemctl restart tts-server ttsbot
-```
-
----
-
-## ⚠️ Lưu ý
-
-- **Python 3.11** bắt buộc — `vinorm` không tương thích 3.12+
-- Giới hạn **150 ký tự** mỗi tin nhắn để tránh OOM
-- Bot tự bỏ qua link, @mention, custom emoji
-- Model tự tải lần đầu (~500 MB), lưu tại `~/.cache/valtec_tts/`
-- Backend chạy trên `127.0.0.1:5050` — không mở ra internet
+> 💡 **Với tính năng Clone**: Dù bạn chạy 1 bot hay 10 bots con, chúng đều tự động khôi phục và hoạt động trơn tru sau mỗi lần máy chủ bảo trì khởi động lại, nhờ tập hợp lưu trữ Child Process `clones.json`!
