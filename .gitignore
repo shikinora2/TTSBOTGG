@@ -1,0 +1,31 @@
+# Biến môi trường
+.env
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# File audio tạm
+temp_audio/
+temp_audio_*.wav
+output/
+
+# Clone config (chứa token)
+clones.json
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Build cache trong valtec-tts-src
+valtec-tts-src/deployments/android/.gradle/
+valtec-tts-src/deployments/android/build/
+valtec-tts-src/deployments/android/app/build/
+valtec-tts-src/deployments/android/local.properties
+valtec-tts-src/*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
