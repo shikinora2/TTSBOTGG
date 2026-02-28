@@ -20,6 +20,7 @@
     "google-tts-api": "^2.0.2",
     "libsodium-wrappers": "^0.8.2",
     "mplayer": "^2.1.0",
-    "node-wav-player": "^1.0.0"
+    "node-wav-player": "^1.0.0",
+    "tweetnacl": "^1.0.3"
   }
 }

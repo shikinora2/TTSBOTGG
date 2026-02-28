@@ -27,7 +27,18 @@ class TTSQueueManager {
 
         // Bắt đầu xử lý nều chưa
         if (!queue.isPlaying) {
+            console.log(`[TTS] Queue đang rảnh, gọi processQueue ngay.`);
             this.processQueue(guildId, voiceManager, channelObj, guildObj);
+        } else {
+            console.log(`[TTS] Queue báo đang bận (isPlaying=true). Chờ lượt...`);
+
+            // Đề phòng kẹt Queue, check xem player có nhàn rỗi không
+            const player = voiceManager.players.get(guildId);
+            if (player && player.state.status === require('@discordjs/voice').AudioPlayerStatus.Idle) {
+                console.log(`[TTS Warning] Queue báo bận nhưng Player đang Idle! Ép buộc chạy tiếp.`);
+                queue.isPlaying = false;
+                this.processQueue(guildId, voiceManager, channelObj, guildObj);
+            }
         }
     }
 

@@ -134,6 +134,7 @@ class VoiceManager {
                     if (currentConnection) {
                         const currentBotChannel = client.channels.cache.get(currentConnection.joinConfig.channelId);
                         if (currentBotChannel && currentBotChannel.members.filter(m => !m.user.bot).size === 0) {
+                            console.log(`[Auto-Leave] Vẫn không có ai sau 10s. Rút lui.`);
                             // Rút lui
                             ttsQueue.clearQueue(guildId);
                             currentConnection.destroy();
