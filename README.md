@@ -10,7 +10,7 @@ Phiên bản mới viết bằng **Node.js** cực kỳ nhẹ nhàng, siêu tố
 Hãy mở terminal SSH vào VPS Ubuntu của bạn, copy dòng dưới đây rồi bấm Enter:
 
 ```bash
-git clone https://github.com/shikinora2/TTSBOT.git /root/ttsbot && cd /root/ttsbot && sudo bash setup.sh
+git clone https://github.com/shikinora2/TTSBOTGG.git /root/TTSBOTGG && cd /root/TTSBOTGG && sudo bash setup.sh
 ```
 
 > ⏱ Mất chưa tới **2 phút**. Script lập trình sẵn sẽ tự động cài Node.js 20, thư viện FFmpeg, tải Dependencies và thiết lập siêu công cụ quản lý `pm2` để bot luôn tự bắt đầu chạy ngầm mỗi khi khởi động lại máy.
@@ -30,7 +30,7 @@ git clone https://github.com/shikinora2/TTSBOT.git /root/ttsbot && cd /root/ttsb
 Bạn cần điền thông tin Token Discord để bot hoạt động:
 
 ```bash
-nano /root/ttsbot/.env
+nano /root/TTSBOTGG/.env
 ```
 
 Điền Token và Application ID của Bot (lấy tại trang Discord Developer Portal):
@@ -44,7 +44,7 @@ DISCORD_APP_ID=DÁN_BOT_ID_CỦA_BẠN_VÀO_ĐÂY
 Sử dụng công cụ `pm2` để yêu cầu bot làm mới dữ liệu và bắt đầu phục vụ:
 
 ```bash
-pm2 restart ttsbot
+pm2 restart TTSBOTGG
 ```
 
 ---
@@ -79,9 +79,9 @@ pm2 restart ttsbot
 
 Hệ thống Bot hiện tại không chiếm dụng cửa sổ Terminal của bạn. Nó sử dụng `PM2`. Bạn có thể dễ dàng quản lý thông qua các lệnh rút gọn này:
 
-- **Xem log tương tác (cửa sổ theo dõi bot chat)**: `pm2 logs ttsbot`
-- **Tạm dừng bot hoạt động**: `pm2 stop ttsbot`
-- **Khởi động lại bot**: `pm2 restart ttsbot`
-- **Kiểm tra tình trạng bot (RAM/CPU đang tốn)**: `pm2 status ttsbot`
+- **Xem log tương tác (cửa sổ theo dõi bot chat)**: `pm2 logs TTSBOTGG`
+- **Tạm dừng bot hoạt động**: `pm2 stop TTSBOTGG`
+- **Khởi động lại bot**: `pm2 restart TTSBOTGG`
+- **Kiểm tra tình trạng bot (RAM/CPU đang tốn)**: `pm2 status TTSBOTGG`
 
 > 💡 **Với tính năng Clone**: Dù bạn chạy 1 bot hay 10 bots con, chúng đều tự động khôi phục và hoạt động trơn tru sau mỗi lần máy chủ bảo trì khởi động lại, nhờ tập hợp lưu trữ Child Process `clones.json`!

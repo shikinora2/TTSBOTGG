@@ -30,7 +30,7 @@ sudo npm install pm2 -g -y
 
 # 6. Khởi chạy Bot lần đầu
 echo "▶️ Đang khởi động Bot thông qua PM2..."
-pm2 start src/index.js --name "ttsbot"
+pm2 start src/index.js --name "TTSBOTGG"
 
 # 7. Cấu hình PM2 khởi động cùng VPS
 pm2 save
@@ -42,5 +42,5 @@ echo "   📝 Vui lòng nhập TOKEN Discord vào file .env bằng lệnh:"
 echo "      nano .env"
 echo ""
 echo "   ♻️ Sau khi lưu file .env, khởi động lại bot bằng lệnh:"
-echo "      pm2 restart ttsbot"
+echo "      pm2 restart TTSBOTGG"
 echo "=========================================================="
